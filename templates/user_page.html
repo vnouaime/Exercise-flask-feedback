@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.first_name }} {{ user.last_name }}{% endblock %}
+
+<!-- User Page -->
+{% block content %}
+    {% for msg in get_flashed_messages() %}
+        <div class="alert alert-success" role="alert">
+            {{ msg }}
+        </div>
+    {% endfor %}
+    
+    <!-- Card that displays user's information -->
+    <h1 class="display-1 text-center">{{ user.first_name }} {{ user.last_name }}</h1>
+
+    <div class="card mb-3">
+        <div class="row no-gutters justify-content-center">
+          <div class="col-lg-4">
+            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" class="card-img" alt="">
+          </div>
+          <div class="col-lg-8">
+            <div class="card-body">
+              <p class="card-text" style="font-size: 20px;">Username: {{ user.username }}</p>
+              <p class="card-text" style="font-size: 20px;">Email: {{ user.email }}</p>
+              <form method="POST" action="/users/{{ user.username }}/delete">
+                {{ form.hidden_tag() }}
+                <button 
+                  class="btn btn-sm btn-danger">Delete User
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Displays user feedback -->
+    <h3 class="display-3">Feedback</h3>
+    <ul>
+      {% for feedback in user_feedback %}
+        <li>
+          {{ feedback.title }}
+          <ul>
+              <li>
+                {{ feedback.content }}
+                {% if session["user_username"] == feedback.user_username %}
+                  <a class="btn btn-sm btn-primary" href="/feedback/{{ feedback.id }}/update">Update</a>
+                  <form method="POST" action="/feedback/{{ feedback.id }}/delete">
+                    {{ form.hidden_tag() }}
+                    <button 
+                      class="btn btn-sm btn-danger">Delete Feedback
+                    </button>
+                  </form>
+                {% endif %}
+              </li>
+          </ul>
+        </li>
+      {% endfor %}
+    </ul>
+    {% if session["user_username"] == user.username %}
+      <a class="btn btn-info" href="/users/{{ user.username }}/feedback/add">Add Feedback</a>
+    {% endif %}
+    
+{% endblock %}
